@@ -1,0 +1,25 @@
+
+Model & Migration
+
+MVC - Model View Controller
+
+Tugas => Menghubungkan database dengan laravel 
+
+Query => Mengambil data dari database
+
+Migration => Mengubah struktur database 
+
+php artisan migrate => Untuk menjalankan migration di folder database/migrations
+
+php artisan migrate:rollback => Untuk membatalkan migration di folder database/migrations
+
+didalam database table
+- created_at => berisi data waktu pembuatan
+- updated_at => berisi data waktu pembaruan
+
+tempat model => di folder app/Models
+
+
+
+
+
