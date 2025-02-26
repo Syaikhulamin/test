@@ -24,7 +24,7 @@
                 <th>Nama</th>
                 <th>Deskripsi</th>
                 <th>Harga</th>
-                {{-- <th>Gambar</th> --}}
+                <th>Gambar</th>
             </tr>
         </thead>
         <tbody>
@@ -34,16 +34,15 @@
                 <td>{{ $item->nama }}</td>
                 <td>{{ $item->deskripsi }}</td>
                 <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                {{-- <td>
-                    <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->nama }}" class="img-thumbnail" width="100">
-                </td> --}}
-                {{-- // add button to edit and delete --}}
                 <td>
-                    <a href="{{ route('menu.edit', $item->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                    <form action="{{ route('menu.destroy', $item->id) }}" method="post">
+                    <img src="{{ asset('/storage/menu/'.$item->gambar) }}" alt="{{ $item->nama }}" class="img-thumbnail" width="100">
+                </td>
+                <td>
+                    <a href="{{ route('kursi', $item->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form action="{{ route('menu.destroy', $item->id) }}" method="post" id="form-delete">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                        <button type="button" class="btn btn-sm btn-danger delete-button" data-id="{{ $item->id }}">Hapus</button>
                     </form>
                 </td>
             </tr>
@@ -56,3 +55,23 @@
     </table>
 </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function(){
+            $(".delete-button").on("click", function(e) {
+                e.preventDefault(); // Mencegah aksi default tombol
+                let itemId = $(this).data("id"); // Mengambil ID dari tombol
+
+                if (confirm("Are you sure you want to delete this item?")) {
+                    // Jika dikonfirmasi, jalankan aksi (misalnya, hapus dari database)
+                    alert("Item with ID " + itemId + " deleted!");
+                    
+                   $('#form-delete').submit();
+                } else {
+                    alert("Deletion canceled.");
+                }
+            });
+        });
+    </script>
+
+@endpush

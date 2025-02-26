@@ -19,21 +19,19 @@ use App\Models\Kelas;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // return view('welcome');
+    return redirect()->route('menu.index');
 });
-
 
 Route::get('kelas', function () {
     dd(Kelas::with('siswa')->get()->toArray());
 });
 
 
-
-
-// Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
-// Route::get('/menu/create', [MenuController::class, 'create'])->name('menu.create');
-// Route::post('/menu', [MenuController::class, 'store'])->name('menu.store');
-// Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.show');
-// Route::get('/menu/{id}/edit', [MenuController::class, 'edit'])->name('menu.edit');
-// Route::put('/menu/{id}', [MenuController::class, 'update'])->name('menu.update');
-// Route::delete('/menu/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
+Route::get('/menu/create', [MenuController::class, 'create'])->name('menu.create');
+Route::post('/menu', [MenuController::class, 'store'])->name('menu.store');
+Route::get('/menu/{id}', [MenuController::class, 'show'])->name('menu.show');
+Route::get('/menu/{id}/edit/{kelas?}', [MenuController::class, 'edit'])->name('kursi');
+Route::put('/menu/{id}', [MenuController::class, 'update'])->name('menu.update');
+Route::delete('/menu/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');

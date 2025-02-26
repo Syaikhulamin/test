@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Menu;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
@@ -55,7 +56,9 @@ class MenuController extends Controller
         $menu->harga = $request->harga;
 
         if ($request->hasFile('gambar')) {
-            $menu->gambar = $request->file('gambar')->store('menu');
+            $upload = $request->file('gambar')->store('public/menu');
+            $fileName = basename($upload);
+            $menu->gambar = $fileName;
         }
 
         $menu->save();
@@ -96,25 +99,36 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nama' => 'required',
-            'deskripsi' => 'required',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'nullable|mimes:jpeg,png,jpg,gif,svg'
-        ]);
 
-        $menu = Menu::findOrFail($id);
-        $menu->nama = $request->nama;
-        $menu->deskripsi = $request->deskripsi;
-        $menu->harga = $request->harga;
+        try {
 
-        if ($request->hasFile('gambar')) {
-            $menu->gambar = $request->file('gambar')->store('menu');
+            $request->validate([
+                'nama' => 'required',
+                'deskripsi' => 'required',
+                'harga' => 'required|numeric|min:0',
+                'gambar' => 'nullable|mimes:jpeg,png,jpg,gif,svg'
+            ]);
+
+            $menu = Menu::findOrFail($id);
+            $menu->nama = $request->nama;
+            $menu->deskripsi = $request->deskripsi;
+            $menu->harga = $request->harga;
+
+            if ($menu->gambar && Storage::exists('public/menu/' . $menu->gambar)) {
+                Storage::delete('public/menu/' . $menu->gambar);
+            }
+
+            // Upload gambar baru
+            $upload = $request->file('gambar')->store('public/menu');
+            $fileName = basename($upload);
+            $menu->gambar = $fileName;
+
+            $menu->save();
+
+            return redirect()->route('menu.index')->with('success', 'Menu berhasil diubah!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        $menu->save();
-
-        return redirect()->route('menu.index')->with('success', 'Menu berhasil diubah!');
     }
 
     /**
