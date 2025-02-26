@@ -6,18 +6,6 @@
     <table class="table table-bordered table-striped">
         {{-- add button to create new menu --}}
         <a href="{{ route('menu.create') }}" class="btn btn-primary mb-3">Tambah Menu</a>
-
-        {{-- // add alert from controller success or error --}}
-        @if ($message = Session::get('success'))
-            <div class="alert alert-success" role="alert">
-                {{ $message }}
-            </div>  
-        @endif  
-        @if ($message = Session::get('error'))
-            <div class="alert alert-danger" role="alert">
-                {{ $message }}
-            </div>  
-        @endif
         <thead class="thead-dark">
             <tr>
                 <th>No</th>
@@ -64,7 +52,7 @@
 
                 if (confirm("Are you sure you want to delete this item?")) {
                     // Jika dikonfirmasi, jalankan aksi (misalnya, hapus dari database)
-                    alert("Item with ID " + itemId + " deleted!");
+                    alert("Menu Berhasil dihapus!");
                     
                    $('#form-delete').submit();
                 } else {

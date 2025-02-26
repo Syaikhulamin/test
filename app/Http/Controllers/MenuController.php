@@ -42,28 +42,36 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required',
-            'deskripsi' => 'required',
-            'harga' => 'required|numeric|min:0',
-            'gambar' => 'nullable|mimes:jpeg,png,jpg,gif,svg'
-        ]);
+
+        try {
+            $request->validate([
+                'nama' => 'required',
+                'deskripsi' => 'required',
+                'harga' => 'required|numeric|min:0',
+                'gambar' => 'nullable|mimes:jpeg,png,jpg,gif,svg'
+            ]);
 
 
-        $menu = new Menu();
-        $menu->nama = $request->nama;
-        $menu->deskripsi = $request->deskripsi;
-        $menu->harga = $request->harga;
+            $menu = new Menu();
+            $menu->nama = $request->nama;
+            $menu->deskripsi = $request->deskripsi;
+            $menu->harga = $request->harga;
 
-        if ($request->hasFile('gambar')) {
-            $upload = $request->file('gambar')->store('public/menu');
-            $fileName = basename($upload);
-            $menu->gambar = $fileName;
-        }
+            if ($request->hasFile('gambar')) {
+                $upload = $request->file('gambar')->store('public/menu');
+                $fileName = basename($upload);
+                $menu->gambar = $fileName;
+            }
 
-        $menu->save();
+            $menu->save();
         
         return redirect()->route('menu.index')->with('success', 'Menu berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Tangkap error validasi dan kembali dengan pesan error
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
     }
 
     /**
@@ -128,6 +136,9 @@ class MenuController extends Controller
             return redirect()->route('menu.index')->with('success', 'Menu berhasil diubah!');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Tangkap error validasi dan kembali dengan pesan error
+            return redirect()->back()->withErrors($e->errors())->withInput();
         }
     }
 
@@ -140,8 +151,11 @@ class MenuController extends Controller
     public function destroy($id)
     {
         $menu = Menu::findOrFail($id);
-        // kalau ketemu dapet data sebagai array
-        // kalau tidak ketemu akan return page not found
+
+        if ($menu->gambar && Storage::exists('public/menu/' . $menu->gambar)) {
+            Storage::delete('public/menu/' . $menu->gambar);
+        }
+        
         $menu->delete();
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil dihapus!');
